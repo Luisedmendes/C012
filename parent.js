@@ -1,4 +1,6 @@
 import { Worker } from 'worker_threads';
+import { shared } from './semaphore.js';
+
 const pista = 
   [
     { tamanho: 100, dificuldade: 1 },
@@ -27,7 +29,13 @@ function checkWinner() {
 }
 
 cars.forEach(car => {
-  const worker = new Worker('./worker.js', { workerData: car });
+  const worker = new Worker('./worker.js', {
+    workerData: {
+      ...car,
+      sharedBuffer: shared
+    }
+  });
+  
 
   worker.on('message', msg => {
     console.log(`[${msg.name}] ${msg.message}`);
